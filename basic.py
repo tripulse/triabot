@@ -16,7 +16,7 @@ async def ping(ctx: Context):
     tdelta = datetime.utcnow() - ctx.message.created_at
     await ctx.send(f'\u0394`{tdelta}`')
 
-@command
+@command()
 async def computerfft(ctx: Context, *nums):
     """Computes 1D RFFT (real-valued fast-fourier transform) over arbitary
     numeric values separted with spaces."""
@@ -28,7 +28,7 @@ async def computerfft(ctx: Context, *nums):
         lambda n: f'{str(n.real)}+i{str(n.imag)}',
     outvals)))
 
-@command
+@command()
 async def skwiggle(ctx: Context, *string_slices):
     """Idiotizes strings by randomizing the case of each letter.
     This method is mostly used to denote sentences/thoughts that are
