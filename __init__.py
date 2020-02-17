@@ -4,7 +4,7 @@ from   itertools            import chain
 
 import basic
 
-__commandcats__ = (basic) # list of command categories.
+__commandcats__ = (basic,) # list of command categories.
 
 bot = Bot('?', case_insensitive= True)
 
