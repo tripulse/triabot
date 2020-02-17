@@ -28,6 +28,7 @@ async def computerfft(ctx: Context, *nums):
         lambda n: f'{str(n.real)}+i{str(n.imag)}',
     outvals)))
 
+@command
 async def skwiggle(ctx: Context, *string_slices):
     """Idiotizes strings by randomizing the case of each letter.
     This method is mostly used to denote sentences/thoughts that are
