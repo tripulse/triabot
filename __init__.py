@@ -1,3 +1,4 @@
+import discord
 from   discord.ext.commands import *
 from   os                   import getenv
 from   itertools            import chain
