@@ -38,4 +38,4 @@ async def skwiggle(ctx: Context, *string_slices):
 
 
 """Collection of commands exported from this module."""
-__commands__ = (ping,)
+__commands__ = (ping, computerfft, skwiggle)
