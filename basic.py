@@ -37,6 +37,13 @@ async def skwiggle(ctx: Context, *string_slices):
     instr = ' '.join(string_slices)
     await ctx.send(''.join([choice((c.upper, c.lower))() for c in instr]))
 
+@command()
+async def interjection(ctx: Context, thing: str= 'linux'):
+    speech = f"I'd just like to interject for a moment.  What you're referring to as {thing}, "\
+             f"is in fact, GNU/{thing}, or as I've recently taken to calling it, GNU plus {thing}."
+
+    await ctx.send(speech)
+
 
 """Collection of commands exported from this module."""
-__commands__ = (ping, computerfft, skwiggle)
+__commands__ = (ping, computerfft, skwiggle, interjection)
