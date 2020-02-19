@@ -43,8 +43,15 @@ async def interjection(ctx: Context, thing: str= 'linux'):
     told by Richard M. Stallman at some point."""
     speech = f"I'd just like to interject for a moment. What you're referring to as {thing}, "\
              f"is in fact, GNU/{thing}, or as I've recently taken to calling it, GNU plus {thing}."
-
+    
     await ctx.send(speech)
+
+@command()
+async def asOPUS(ctx: Context):
+    """Calls FFmpeg sub-process for conversion from any format
+    into the OGGOpus format."""
+    
+    ctx.send("this function is a future plan!")
 
 
 """Collection of commands exported from this module."""
