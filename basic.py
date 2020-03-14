@@ -22,7 +22,7 @@ async def computerfft(ctx: Context, *nums):
     numeric values separted with spaces."""
     
     invals = tuple(map(lambda n: float(n), nums))
-    outvals = rfft(invals).tolist()
+    outvals = rfft(invals)
 
     await ctx.send(' '.join(map(
         lambda n: f'{str(n.real)}+i{str(n.imag)}',
