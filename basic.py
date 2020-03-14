@@ -1,11 +1,11 @@
-"""A collection of basic commands that idol Discord bot should have."""
+"A collection of basic commands that idol Discord bot should have."
 from discord.ext.commands import command, Context
-from discord import Embed
+from discord              import Embed
 
-from datetime import datetime
+from datetime  import datetime
 from numpy.fft import rfft
 from functools import reduce
-from random import choice
+from random    import choice
 
 
 @command()
@@ -38,21 +38,13 @@ async def skwiggle(ctx: Context, *string_slices):
     await ctx.send(''.join([choice((c.upper, c.lower))() for c in instr]))
 
 @command()
-async def interjection(ctx: Context, thing: str= 'linux'):
+async def interjection(ctx: Context, thing: str= 'Linux'):
     """Spits out a slice of the GNU/Linux interjection speech
     told by Richard M. Stallman at some point."""
     speech = f"I'd just like to interject for a moment. What you're referring to as {thing}, "\
              f"is in fact, GNU/{thing}, or as I've recently taken to calling it, GNU plus {thing}."
     
     await ctx.send(speech)
-
-@command()
-async def asOPUS(ctx: Context):
-    """Calls FFmpeg sub-process for conversion from any format
-    into the OGGOpus format."""
-    
-    ctx.send("this function is a future plan!")
-
 
 """Collection of commands exported from this module."""
 __commands__ = (ping, computerfft, skwiggle, interjection)
