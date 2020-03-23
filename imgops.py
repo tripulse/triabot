@@ -22,7 +22,7 @@ async def pngminify(ctx: Context, url: str= None):
 
         attachment = await attachment.to_file()
         png_sig = attachment.fp.read(8)
-        if '\x89PNG\x0d\x0a\x1a\x0a' != png_sig:
+        if '\x89PNG\r\n\x1a\n' != png_sig:
             await ctx.send("Invalid PNG signature found in the beginning.")
 
     outimg = requests.post('https://pngmin.herokuapp.com/', png_sig + attachment.fp.read())
