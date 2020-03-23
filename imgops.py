@@ -7,7 +7,7 @@ when encoding to different format (eg. WebP).
 from discord.ext.commands import command, Context
 from discord              import File
 import requests
-import io
+from io                   import BytesIO
 
 @command()
 async def pngminify(ctx: Context, url: str= None):
@@ -18,18 +18,18 @@ async def pngminify(ctx: Context, url: str= None):
     """
     for attachment in ctx.message.attachments:
         if attachment.size < 57:
-            ctx.send("Invalid PNG file size as of specification.")
+            await ctx.send("Invalid PNG file size as of specification.")
 
-        attachment = attachment.to_file()
-        png_sig = attachment.read(8)
+        attachment = await attachment.to_file()
+        png_sig = attachment.fp.read(8)
         if '\x89PNG\x0d\x0a\x1a\x0a' != png_sig:
-            ctx.send("Invalid PNG signature found in the beginning.")
+            await ctx.send("Invalid PNG signature found in the beginning.")
 
-    outimg = requests.post('https://pngmin.herokuapp.com/', png_sig + attachment.read())
+    outimg = requests.post('https://pngmin.herokuapp.com/', png_sig + attachment.fp.read())
 
     if outimg.status_code == 415:
         ctx.send("Failed to parse the PNG file correctly.")
 
-    ctx.send(file= File(outimg.raw, filename= attachment.filename))
+    await ctx.send(file= File(BytesIO(outimg.content), filename= attachment.filename))
 
 __commands__ = (pngminify,)
