@@ -3,8 +3,9 @@ from   os                   import getenv
 from   itertools            import chain
 
 import basic
+import imgops
 
-__commandcats__ = (basic,) # list of command categories.
+__commandcats__ = (basic,imgops) # list of command categories.
 
 bot = Bot('?', case_insensitive= True)
 
