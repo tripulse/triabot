@@ -25,11 +25,11 @@ async def pngminify(ctx: Context, url: str= None):
         if b'\x89PNG\r\n\x1a\n' != png_sig:
             await ctx.send("Invalid PNG signature found in the beginning.")
 
-    outimg = requests.post('https://pngmin.herokuapp.com/', png_sig + attachment.fp.read())
+        outimg = requests.post('https://pngmin.herokuapp.com/', png_sig + attachment.fp.read())
 
-    if outimg.status_code == 415:
-        ctx.send("Failed to parse the PNG file correctly.")
+        if outimg.status_code == 415:
+            await ctx.send("Failed to parse the PNG file correctly.")
 
-    await ctx.send(file= File(BytesIO(outimg.content), filename= attachment.filename))
+        await ctx.send(file= File(BytesIO(outimg.content), filename= attachment.filename))
 
 __commands__ = (pngminify,)
