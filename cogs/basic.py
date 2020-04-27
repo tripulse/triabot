@@ -13,7 +13,7 @@ class Basic(Cog):
         await ctx.send(
             f'Timedelta: {datetime.utcnow() - ctx.message.created_at}')
     
-    @command
+    @command()
     async def rand(self, ctx, min: float, max: float):
         "Generate a pseudo-random number between a given bound (min..max]."
         await ctx.send(randrange(min, max))
