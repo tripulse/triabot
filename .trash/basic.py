@@ -57,8 +57,14 @@ async def interjection(ctx: Context, thing: str = 'Linux'):
 
 @command()
 async def random(ctx: Context, min: int, max: int):
+    "Generate a pseudorandom number in a given bound."
     await ctx.send(randrange(min, max))
+
+@command()
+async def pick(ctx: Context, *schoices):
+    "Picks from an option from several options randomly."
+    await ctx.send(choice(schoices))
 
 
 """Collection of commands exported from this module."""
-__commands__ = (ping, computerfft, skwiggle, interjection)
+__commands__ = (ping, computerfft, skwiggle, interjection, random, pick)
