@@ -4,7 +4,7 @@ from   os                   import getenv
 bot = Bot('?', case_insensitive= True)
 
 # all Cog registrations go here:
-from .cogs.basic import Basic
+from cogs.basic import Basic
 
 bot.add_cog(Basic(bot))
 
