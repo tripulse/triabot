@@ -1,7 +1,6 @@
-from discord.ext.commands import Cog
-from discord.ext.commands import command
+from discord.ext.commands import Cog, command
 from datetime import datetime
-from random import choice, randrange
+from random import choice, uniform
 
 class Basic(Cog):
     """Basic features of the bot, basic in the sense that
@@ -14,9 +13,9 @@ class Basic(Cog):
             f'Timedelta: {datetime.utcnow() - ctx.message.created_at}')
     
     @command()
-    async def rand(self, ctx, min: float, max: float):
+    async def rand(self, ctx, min: complex, max: complex):
         "Generate a pseudo-random number between a given bound (min..max]."
-        await ctx.send(randrange(min, max))
+        await ctx.send(uniform(min, max))
 
     @command()
     async def pick(self, ctx, *options):
