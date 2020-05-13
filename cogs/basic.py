@@ -1,6 +1,8 @@
 from discord.ext.commands import Cog, command
 from datetime import datetime
 from random import choice, uniform
+from itertools import chain
+from math import log1p
 
 class Basic(Cog):
     """Basic features of the bot, basic in the sense that
@@ -21,3 +23,12 @@ class Basic(Cog):
     async def pick(self, ctx, *options):
         "Pick an option from a provided list of options (separted by spaces) randomly."
         await ctx.send(choice(options))
+
+    @command()
+    async def rndspc(self, ctx, *frags):
+        """Joins single-letters with spaces with random spaces,
+        using a little-complex alogirthms."""
+
+        await ctx.send(''.join(
+            c + ' ' * int(log1p(i)) for i,c in
+                enumerate(chain(*frags))))
