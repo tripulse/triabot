@@ -32,3 +32,13 @@ class Basic(Cog):
         await ctx.send(''.join(
             c + ' ' * int(log1p(i)) for i,c in
                 enumerate(chain(*frags))))
+
+    @command()
+    async def rndcap(self, ctx, *frags):
+        """Does alternate capitalization of text, this is mostly
+        used to say a wrong statement in sarcastic way. See this:
+        https://english.stackexchange.com/q/533036"""
+
+        await ctx.send(''.join(
+            choice([c.upper, c.lower])() for c in
+                enumerate(chain(*frags))))
