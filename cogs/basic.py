@@ -41,4 +41,4 @@ class Basic(Cog):
 
         await ctx.send(''.join(
             choice([c.upper, c.lower])() for c in
-                enumerate(chain(*frags))))
+                ' '.join(frags)))
