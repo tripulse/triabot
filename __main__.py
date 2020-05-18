@@ -7,23 +7,24 @@ bot = Bot('_', case_insensitive=True)
 
 # Cogs loading
 for cog in listdir("cogs"):
-    if ".py" in cog:
-        bot.load_extension("cogs." + cog.replace(".py", ""))
+    if ".py" == cog[-3:]:
+        bot.load_extension("cogs."+cog[:-3])
 
 # Cogs reload command
 @bot.command()
 @check(is_bot_owner)
 async def reload(ctx):
-    await bot.change_presence(activity=Game("reloading ..."), status=Status.idle)
-    message = await ctx.send("reloading...")
+
+    await bot.change_presence(status=Status.idle)
+
     for cog in listdir("cogs"):
-        if ".py" in cog:
-            if cog.replace(".py", "") in bot.cogs.keys():
-                bot.reload_extension("cogs." + cog.replace(".py", ""))
+        if ".py" == cog[-3:]:
+            if cog[:-3] in bot.cogs.keys():
+                bot.reload_extension("cogs."+cog[:-3])
             else:
-                bot.load_extension("cogs." + cog.replace(".py", ""))
-    await message.edit(content="reloaded!")
-    await bot.change_presence(activity=None, status=Status.online)
+                bot.load_extension("cogs."+cog[:-3])
+    
+    await bot.change_presence(status=Status.online)
 
 # Stop command
 @bot.command()
