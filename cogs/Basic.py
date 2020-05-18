@@ -22,7 +22,10 @@ class Basic(Cog):
     @command()
     async def pick(self, ctx, *options):
         "Pick an option from a provided list of options (separted by spaces) randomly."
-        await ctx.send(choice(options))
+        if len(options) == 0:
+            await ctx.send('Cannot choose out of nowhere!')
+        else:
+            await ctx.send(choice(options))
 
     @command()
     async def rndspc(self, ctx, *frags):
