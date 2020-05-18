@@ -1,36 +1,40 @@
-from   discord.ext.commands import Bot, check
-from   discord              import Game, Status
-from   os                   import getenv, listdir
-from   checks               import is_bot_owner
+from discord.ext.commands import Bot, check
+from discord              import Status
+
+import os
+import re
+import asyncio
 
 bot = Bot('_', case_insensitive=True)
 
-# Cogs loading
-for cog in listdir("cogs"):
-    if ".py" == cog[-3:]:
-        bot.load_extension("cogs."+cog[:-3])
+def is_bot_owner(ctx):
+    """Check if a given message is posted by the hoster
+    hosting it, configure environ: `HOST_DISCORD_ID`."""
 
-# Cogs reload command
+    try:
+        return ctx.author.id == int(os.getenv('HOST_DISCORD_ID'))
+    except TypeError:
+        return False
+
+# a regular structure of a filename, including a name and a
+# extension for hinting the user about the type of it.
+filename = re.compile(r'^(?P<name>.*)\.(?P<ext>.*)$')
+
+# reload function if required to reload all the Cogs.
 @bot.command()
 @check(is_bot_owner)
-async def reload(ctx):
+async def reload(*_):
+    # load-in (if not already) or reload Cogs and move on.
+    for mod in os.listdir('cogs'):
+        modname, _, modext = mod.partition('.')
+        if re.match('py', modext, re.I):            
+            (bot.reload_extension if modname in bot.cogs.keys()
+                else bot.load_extension)(f'cogs.{modname}')
 
-    await bot.change_presence(status=Status.idle)
-
-    for cog in listdir("cogs"):
-        if ".py" == cog[-3:]:
-            if cog[:-3] in bot.cogs.keys():
-                bot.reload_extension("cogs."+cog[:-3])
-            else:
-                bot.load_extension("cogs."+cog[:-3])
-    
-    await bot.change_presence(status=Status.online)
-
-# Stop command
-@bot.command()
-@check(is_bot_owner)
-async def stop(ctx):
-    await bot.logout()
-
-# authorize by the token in the environment variables.
-bot.run(getenv('DISCORD_ACCESS_TOKEN'))
+# run the bot with a given token in DISCORD_ACCESS_TOKEN environ.
+# if ctrl-c (^c) was pressed logout from API.
+try:
+    asyncio.run(reload())  # load all the modules at start.
+    bot.run(os.getenv('DISCORD_ACCESS_TOKEN'))
+except KeyboardInterrupt:
+    asyncio.run(bot.logout())
