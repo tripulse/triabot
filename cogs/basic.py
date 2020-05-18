@@ -45,5 +45,5 @@ class Basic(Cog):
 
     @command()
     async def purge(self, ctx, msgNo: int):
-        for msg in ctx.history(limit = msgNo):
+        for msg in (await ctx.history(limit = msgNo).flatten()):
             await msg.delete()
