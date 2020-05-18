@@ -1,4 +1,4 @@
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Cog, command, history
 from datetime import datetime
 from random import choice, uniform
 from itertools import chain
@@ -42,3 +42,8 @@ class Basic(Cog):
         await ctx.send(''.join(
             choice([c.upper, c.lower])() for c in
                 ' '.join(frags)))
+
+    @command()
+    async def purge(self, ctx, msgNo: int):
+        for msg in history(limit = msgNo):
+            await msg.delete()
