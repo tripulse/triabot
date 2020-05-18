@@ -42,3 +42,6 @@ class Basic(Cog):
         await ctx.send(''.join(
             choice([c.upper, c.lower])() for c in
                 ' '.join(frags)))
+
+def setup(bot):
+    bot.add_cog(Basic())
