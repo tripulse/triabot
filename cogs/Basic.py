@@ -80,8 +80,7 @@ class Utils(Cog):
             for msg in del_queue:
                 await msg.delete()
 
-        await ctx.send(f"Purged {len(del_queue)} messages sent "
-                       f"by {target}.")
+        await ctx.send(f"Purged {len(del_queue)} messages sent by {target}.")
 
 def setup(bot):
     bot.add_cog(Basic())
