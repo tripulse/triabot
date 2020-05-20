@@ -1,13 +1,18 @@
-from discord.ext.commands import Cog, command
-from datetime import datetime
-from random import choice, uniform
-from itertools import chain
-from math import log1p
+from discord              import User
+from discord.ext.commands import (
+    Cog, command,
+    bot_has_guild_permissions
+)
+
+from datetime             import datetime, timedelta
+from random               import choice, uniform
+from itertools            import chain
+from math                 import log1p
+from .utils               import (
+    author_has_guild_permissions
+)
 
 class Basic(Cog):
-    """Basic features of the bot, basic in the sense that
-    it takes less computational overhead."""
-
     @command()
     async def ping(self, ctx):
         "Computes the timedelta between posting a message and getting it."
@@ -15,7 +20,7 @@ class Basic(Cog):
             f'Timedelta: {datetime.utcnow() - ctx.message.created_at}')
     
     @command()
-    async def rand(self, ctx, min: complex, max: complex):
+    async def rand(self, ctx, min: float, max: float):
         "Generate a pseudo-random number between a given bound (min..max]."
         await ctx.send(uniform(min, max))
 
@@ -43,5 +48,41 @@ class Basic(Cog):
             choice([c.upper, c.lower])() for c in
                 ' '.join(frags)))
 
+class Utils(Cog):
+    """Contains utilities for Discord moderation, though these features
+    are not all unique but just for covinience. Tools include such as —
+    message purging, etc."""
+
+    @command()
+    @author_has_guild_permissions(manage_messages=True)
+    @bot_has_guild_permissions(manage_messages=True, read_message_history=True)
+    async def purge(self, ctx, target: User, num: int=10):
+        """Bulk delete messages of a certain amount posted
+        by a targetted Discord user. If amount was more than
+        100 messages were older than 14 days old a slow type
+        of operation will be choosen to delete to that amount."""
+
+        del_queue = []  # queue to hold deletable messages.        
+        async for msg in ctx.history(limit=None):
+            if not len(del_queue) < num: break
+            if msg.author == target:
+                del_queue.append(msg)
+
+        current_time = datetime.utcnow()  # the current time in UTC.
+        MAX_AGE = timedelta(days=14)
+
+        # messages can be deleted with bulk deletion method only if:
+        # age <= 14 days, number of messages <= 100.
+        if any((current_time - msg.created_at) <= MAX_AGE
+                for msg in del_queue) or len(del_queue) <= 100:
+           await ctx.channel.delete_messages(del_queue)
+        else:
+            for msg in del_queue:
+                await msg.delete()
+
+        await ctx.send(f"Purged {len(del_queue)} messages sent "
+                       f"by {target}.")
+
 def setup(bot):
     bot.add_cog(Basic())
+    bot.add_cog(Utils())
