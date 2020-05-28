@@ -68,5 +68,4 @@ class Utils(Cog):
 
         await ctx.send(f"Purged {msgs_deleted} messages sent by @{target.tag}.")
 
-
-__cogexport__ = (Basic, Utils)
+__cogexport__ = [Basic, Utils]

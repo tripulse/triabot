@@ -29,6 +29,5 @@ class Memery(Cog):
         msg.set_author(name=info.get('author'))
 
         await ctx.send(embed=msg)
-        
 
-__cogexport__ = (Memery,)
+__cogexport__ = [Memery,]
