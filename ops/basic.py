@@ -8,7 +8,7 @@ from datetime             import datetime, timedelta
 from random               import choice, uniform
 from itertools            import chain
 from math                 import log1p
-from .utils               import (
+from ._utils              import (
     author_has_guild_permissions
 )
 
@@ -31,8 +31,7 @@ class Basic(Cog):
 
     @command()
     async def rndspc(self, ctx, *frags):
-        """Joins single-letters with spaces with random spaces,
-        using a little-complex alogirthms."""
+        """Joins single-letters with spaces with random spaces, using a little-complex alogirthms."""
 
         await ctx.send(''.join(
             c + ' ' * int(log1p(i)) for i,c in
@@ -58,31 +57,16 @@ class Utils(Cog):
     @bot_has_guild_permissions(manage_messages=True, read_message_history=True)
     async def purge(self, ctx, target: User, num: int=10):
         """Bulk delete messages of a certain amount posted
-        by a targetted Discord user. If amount was more than
-        100 messages were older than 14 days old a slow type
-        of operation will be choosen to delete to that amount."""
+        by a targetted Discord user."""
 
-        del_queue = []  # queue to hold deletable messages.        
+        msgs_deleted = 0
         async for msg in ctx.history(limit=None):
-            if not len(del_queue) < num: break
+            if not msgs_deleted < num: break
             if msg.author == target:
-                del_queue.append(msg)
-
-        current_time = datetime.utcnow()  # the current time in UTC.
-        MAX_AGE = timedelta(days=14)
-
-        # messages can be deleted with bulk deletion method only if:
-        # age <= 14 days, number of messages <= 100.
-        if any((current_time - msg.created_at) <= MAX_AGE
-                for msg in del_queue) or len(del_queue) <= 100:
-           await ctx.channel.delete_messages(del_queue)
-        else:
-            for msg in del_queue:
                 await msg.delete()
+                msgs_deleted+= 1
 
-        await ctx.send(f"Purged {len(del_queue)} messages sent "
-                       f"by {target}.")
+        await ctx.send(f"Purged {msgs_deleted} messages sent by @{target.tag}.")
 
-def setup(bot):
-    bot.add_cog(Basic())
-    bot.add_cog(Utils())
+
+__cogexport__ = (Basic, Utils)
