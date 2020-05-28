@@ -20,12 +20,12 @@ def _getall_cogs():
         module = import_module(f'.{module}', __moddir_name__)
 
         cogs = getattr(module, '__cogexport__', None)
-        return [] if cogs is None else \
+        return [] if isinstance(cogs, list) else \
                 filter(lambda cog: issubclass(cog, Cog), cogs)
 
     return chain(*map(lambda mod:
-            _cogextract(filename.from_str(mod).name),
-                Path(__moddir_path__).glob('*.py')))
+                _cogextract(filename.from_str(mod).name),
+                    Path(__moddir_path__).glob('*.py')))
 
 async def on_command_error(ctx, exc):
     """A custom `on_command_error` handler, handles some excpetions
