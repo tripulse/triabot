@@ -20,7 +20,7 @@ def _getall_cogs():
         module = import_module(f'.{module}', __moddir_name__)
 
         cogs = getattr(module, '__cogexport__', None)
-        return [] if isinstance(cogs, list) else \
+        return [] if not isinstance(cogs, list) else \
                 filter(lambda cog: issubclass(cog, Cog), cogs)
 
     return chain(*map(lambda mod:
