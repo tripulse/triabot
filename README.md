@@ -1,7 +1,7 @@
 <h1 align=center>triabot</h1>
-<p align=center>tripulse's own Discord bot which serves a lot of unique features that other bots fail to deliver. This is mostly used for general purpose stuff (eg. slight moderation, text/media manipulation).</p>
+tripulse's own Discord bot which serves a lot of unique features that other bots fail to deliver.
 
-> The internal structures are now stabilized so as the features are. Updates will be pushed at random intervals but gurantee stability, if still a bug is found report to "Issues" tab.
+> The internal structures are now stabilized so as the features are. Updates will be pushed at random intervals but gurantee stability, if still a bug is found report to "Issues" section of the Github repository.
 
 ---
 
@@ -19,16 +19,15 @@ As you may have probably guessed, this is written in Python 3 and uses the newes
 
 
 ### Contribution
-To contribute you must follow some of the idioms of coding in this bot. We spent a lot of time cleaning out the module dependency structure for the sake of cleaniness.
+To contribute you must follow some of the idioms of coding in this bot. We spent a lot of time cleaning out the structure just for the sake of cleaniness and maintainability, this implies if you don't follow these idioms, chances are that your PR will take more longer to be merged or not even being merged at all.
 
 #### Navigation
 - `ops` folder has all the command modules in it. Subfolders inside it work as modules for the commands to reuse, those have no gurantee of being documented.
     - `__init__.py` is where all the command modules are managed, it mostly consists of event listeners, module loaders and text-formatters as of now.
-- `requirements.txt` is where global dependencies should
-be stored, if a command module requires a certain dependency one specify which dependency what version of it, it's is discouraged use broken or unstable dependencies.
+- `requirements.txt` is where external dependencies should be stored, the format is as `pip freeze`, it's highly is discouraged use broken or unstable dependencies.
 
 #### Idioms
-Moving to `ops/` you see a lot of Python modules, each one has multiple categories referred to as so called "cogs" in the discord.py convention.
+Moving to `ops/` you see a lot of Python modules, each one has multiple categories referred to as so called "cogs" in the Discord.py convention:
 
 Categories are always classes that inherit from `Cog`. The syntax is somewhat like this:
 ```py
