@@ -11,14 +11,14 @@ class Reddit_partial(Generator):
     a limited amount of subreddits that has content for memes."""
 
     _DOMAINS = ['i.imgur.com', 'i.redd.it']
-    _INTR_SOURCES = [
+    _INTR_SOURCES = '+'.join([
         'memes',
         'dankmemes',
         'me_irl',
         'ProgrammerHumor',
         'PewdiepieSubmissions',
         'linuxmemes',
-    ]
+    ])
 
     def __init__(self, id: str, secret: str):
         """Initalize a PRAW for grabbing contents of sub-reddits.
@@ -37,14 +37,10 @@ class Reddit_partial(Generator):
         a random post, provides 'title' and 'author' extradata."""
 
         # choose a random meme image from a random sub-reddit,
-        # note: this only picks image URLs and nothing else.
-        meme_img = choice([*filter(
-            lambda p: urlparse(p.url)[1] in self._DOMAINS,
-            self._rctx.subreddit(
-                choice(self._INTR_SOURCES)).top('week')
-        )])
+        # note: this only picks image URLs and nothing else.        
+        img = None
+        while img is None or not urlparse(img.url)[1] in self._DOMAINS:
+          img = self._rctx.subreddit(self._INTR_SOURCES).random()
         
-        return (meme_img.url, {
-            'title': meme_img.title,
-            'author': meme_img.author
-        })
+        return (img.url,
+          {'title': img.title, 'author': img.author})
