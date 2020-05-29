@@ -24,7 +24,7 @@ class Memery(Cog):
 
         pic, info = self._gens[site]()
         
-        msg = Embed(title=info.get('title'))
+        msg = Embed(title=info.get('title'), url=pic)
         msg.set_image(url=pic)
         msg.set_author(name=info.get('author'))
 

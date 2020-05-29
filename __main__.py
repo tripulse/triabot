@@ -4,8 +4,8 @@ from discord.ext.commands import Bot, Cog
 from importlib            import import_module
 
 # initalise the bot instance with case sensitivity for
-# command names and a static prefix of '/'
-bot = Bot('/', case_insensitive=True)
+# command names and a static prefix of '.'
+bot = Bot('.', case_insensitive=True)
 bot.load_extension('ops')
 
 try:
