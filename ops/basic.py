@@ -15,10 +15,9 @@ from ._utils              import (
 class Basic(Cog):
     @command()
     async def ping(self, ctx):
-        "Computes the timedelta between posting a message and getting it."
-        await ctx.send(
-            f'Timedelta: {datetime.utcnow() - ctx.message.created_at}')
-    
+        "Computes the delay of the WebSocket (unit: miliseconds)."
+        await ctx.send(ctx, f'{round(ctx.bot.latency*1000, 3)} ms')
+
     @command()
     async def rand(self, ctx, min: float, max: float):
         "Generate a pseudo-random number between a given bound (min..max]."
