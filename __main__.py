@@ -8,7 +8,7 @@ bot = Bot('.', case_insensitive=True)
 bot.load_extension('ops')
 
 # override the code-block version of help-formatter
-from ._utils import EmbedHelp
+from _utils import EmbedHelp
 bot.help_command = EmbedHelp()
 
 try:
