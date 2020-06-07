@@ -17,12 +17,12 @@ class EmbedHelp(HelpCommand):
         "Send all the global and Cog specific commands."
 
         for cog, commands in mappings.items():
-            self._send_cog_help(cog, commands)
+            await self._send_cog_help(cog, commands)
     
     async def send_cog_help(self, cog):
         "Send help message for a defined Cog."
 
-        self._send_cog_help(cog, cog.get_commands())
+        await self._send_cog_help(cog, cog.get_commands())
     
     async def _send_cog_help(self, cog, commands):
         helpmsg = Embed(
