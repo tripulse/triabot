@@ -6,22 +6,19 @@ from random          import choice
 from os              import getenv
 
 class Memery(Cog):    
-    """Sprinkle of internet humor from the major platforms
-    to the obscure corners of the internet (eg. Reddit)."""
+    """Sprinkle of internet humor from the major platforms to the obscure corners
+    of the internet (eg. Reddit), might use some external APIs too"""
+
     _gens = {
-        'reddit': Reddit_partial(
-            getenv('RAPI_CLID'),
-            getenv('RAPI_CLSECRET'))
+        'reddit': Reddit_partial(getenv('RAPI_CLID'), getenv('RAPI_CLSECRET')),
     }
 
     @command()
-    async def meme(self, ctx, site=''):
-        """Cherrypick a meme from a site defined if cannot or
-        not defined selects a random post from a random site."""
+    async def meme(self, ctx):
+        """Cherrypicks a meme from anywhere it has reach to, this always posts an
+        image as most of internet memes are made as images"""
 
-        if not site in self._gens:
-            site = choice([*self._gens.keys()])
-
+        site = choice([*self._gens.keys()])
         pic, info = self._gens[site]()
         
         msg = Embed(title=info.get('title'), url=pic)
