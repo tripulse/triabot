@@ -5,11 +5,11 @@ class EmbedHelp(HelpCommand):
   """Help-command formatter that uses multiple embeds for each cogs or global level commands.
   It is considered better than the default formatter that multiple codeblocks as pages."""
 
-  async def _prepare_command_desc(self, command) -> str:
-    "Given a command prepare its description."
+  # async def _prepare_command_desc(self, command) -> str:
+  #   "Given a command prepare its description."
 
-    # the signature is kept bold and the rest unchanged.
-    return f"**{self.get_command_signature(command)}**\n{command.help}"
+  #   # the signature is kept bold and the rest unchanged.
+  #   return f"**{self.get_command_signature(command)}**\n{command.help}"
 
   async def send_bot_help(self, mappings):
     for cog, commands in mappings.items():
@@ -24,20 +24,20 @@ class EmbedHelp(HelpCommand):
       description=getattr(cog, 'description', None))
 
     for command in await self.filter_commands(commands, sort=True):
-      helpmsg.add_field(name=command.name, inline=False, value=
-        self.prepare_help_command(command))
+      helpmsg.add_field(name=self.get_command_signature(command),
+        inline=False, value=command.help)
     
     await self.get_destination().send(embed=helpmsg)
 
   async def send_command_help(self, command):
     await self.get_destination().send(embed=
-      Embed(title=command.name, description=self._prepare_command_desc(command)))
+      Embed(title=self.get_command_signature(command), description=command.help))
 
   async def send_group_help(self, group):
-    helpmsg = Embed(title=group.name, description=self._prepare_command_desc(group))
+    helpmsg = Embed(title=group.name, description=group.help)
       
     for command in group.commands:
-      helpmsg.add_field(name=command.name, inline=False,
-        value=self._prepare_command_desc(command))
+      helpmsg.add_field(name=self.get_command_signature(command),
+        inline=False, value=command.help)
       
     await self.get_destination().send(embed=helpmsg)
