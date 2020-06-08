@@ -5,12 +5,6 @@ class EmbedHelp(HelpCommand):
   """Help-command formatter that uses multiple embeds for each cogs or global level commands.
   It is considered better than the default formatter that multiple codeblocks as pages."""
 
-  # async def _prepare_command_desc(self, command) -> str:
-  #   "Given a command prepare its description."
-
-  #   # the signature is kept bold and the rest unchanged.
-  #   return f"**{self.get_command_signature(command)}**\n{command.help}"
-
   async def send_bot_help(self, mappings):
     for cog, commands in mappings.items():
         await self._send_cog_help(cog, commands)
