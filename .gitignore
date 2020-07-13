@@ -3,3 +3,5 @@ __pycache__/
 .trash/
 assets/
 .idea/
+venv/
+start.sh
