@@ -7,11 +7,12 @@ import logging
 from sys import stderr
 from _utils import DecoratedHelpCommand
 from pymongo import MongoClient
+from discord import Embed
 from discord.ext.commands import (
     Bot,
     has_guild_permissions
 )
-from cogs._utils import subscript
+from cogs._utils import subscript, get_color
 
 
 # the configured logger to use, to log all events.
@@ -65,10 +66,21 @@ async def prefix(ctx, text: str=None):
     prev_prefix = _get_prefix_or_default(ctx.guild)
 
     if text:
-        bot_data.prefixes.insert_one({'id': ctx.guild.id, 'text': text})
-        await ctx.send(f"Guild prefix changed from `{prev_prefix}` to `{text}`")
+        bot_data.prefixes.update_one({'id': ctx.guild.id}, {'$set': {'text': text}}, upsert=True)
+        await ctx.send(embed=Embed.from_dict({
+            'title': 'Guild prefix has changed',
+            'fields': [{
+                'name': 'From',
+                'value': prev_prefix,
+            }, {
+                'name': 'To',
+                'value': text
+            }],
+            'color': get_color().value}))
     else:
-        await ctx.send(f"Guild prefix is `{prev_prefix}`")
+        await ctx.send(embed=Embed.from_dict({'title': 'Current guild prefix',
+                                              'description': prev_prefix,
+                                              'color': get_color().value}))
 
 
 bot.run(bot_config['discord_token'])
