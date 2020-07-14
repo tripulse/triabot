@@ -39,7 +39,7 @@ class Utils(Cog):
         # messages cannot be deleted older than 14 days.
         # cannot delete more than 100 messages at once.
         async for chunk in chunked(map(lambda m: m[1], takewhile(
-                lambda m: m[0] <= num and (ctx.message.created_at - m[1].created_at).days < 14,
+                lambda m: m[0] < num and (ctx.message.created_at - m[1].created_at).days < 14,
                 filterfalse(lambda m: not(m[1].author == target or target is None), aenumerate(messages)))), 100):
 
             chunk = list(chunk)
