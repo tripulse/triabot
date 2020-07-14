@@ -1,3 +1,4 @@
+from discord import Embed, Colour
 from discord.ext.commands import Cog
 from discord.ext.commands.errors import (
     BadArgument,
@@ -53,7 +54,8 @@ def setup(bot):
                                   MissingPermissions, UnexpectedQuoteError, BotMissingPermissions,
                                   MaxConcurrencyReached, MissingRequiredArgument, ExpectedClosingQuoteError,
                                   InvalidEndOfQuotedStringError)):
-            await ctx.send(str(exception))  # use the default text from exception.
+            await ctx.send(embed=Embed.from_dict({'description': str(exception),
+                                                  'color': Colour.red().value}))
         else:
             print_exception(exception.__class__, exception, exception.__traceback__)
 
