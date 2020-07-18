@@ -17,7 +17,7 @@ from discord import (
 
 from aioitertools import takewhile, map, filterfalse
 from aioitertools.more_itertools import chunked
-from ._utils import get_member_color, aenumerate
+from utils.misc import get_member_color, aenumerate
 
 
 class Utils(Cog):
