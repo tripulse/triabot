@@ -4,7 +4,7 @@ from discord.ext.commands import BadArgument, Cog, group
 from discord import Embed
 
 from .memegen.reddit import RedditMeme
-from ._utils import call, get_color
+from utils.misc import call, get_color
 
 
 class Fun(Cog):
@@ -14,8 +14,8 @@ class Fun(Cog):
 
     async def cog_before_invoke(self, ctx):
         self._generators.update({
-            'reddit': RedditMeme(ctx.bot.config['reddit_clid'],
-                                 ctx.bot.config['reddit_clsecret'])
+            'reddit': RedditMeme(ctx.bot.config['credentials']['reddit']['client_id'],
+                                 ctx.bot.config['credentials']['reddit']['client_secret'])
         })
 
     @group(invoke_without_command=True)
