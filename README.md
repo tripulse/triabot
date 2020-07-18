@@ -10,24 +10,22 @@ As you may have probably guessed, this is written in Python 3 for doing the work
 ### Installation
 - clone the repository
 - type in TTY `pip3 install -r requirements.txt`
-- setup a MongoDB database by following the instructions found on the internet.
-  - retrieve the connection URI from the cluster then put it inside the `DBOT_DATASTORE` enviroment variable.
-  - make collections in the database: `prefixes` and `configuration`.
-  - navigate to `configurations` and insert a document, put this where the data should be (excluding the comments),
-  replace values as needed:
-    ```json5
-    {
-      "default_prefix": ".",  // prefix to use when not configured for a guild.
-      "discord_token": "",  // token for the Bot to use the API.
-      
-      // for using the Reddit for the Memery category.
-      "reddit_clid": "",  // reddit application: client id.
-      "reddit_clsecret": ""  // client secret.
-    }
-    ```
-
-Optionally, to configure the log-level in the console, set `DBOT_LOGLEVEL` to any of [these values][1], by default it's
-set to `INFO` level (the most *acceptable* verbosity). 
+- make a `config.yml` in the current folder, which defines how the bot acts, structure it somewhat like this:
+  ```yaml
+  credentials:
+    discord:
+      token: ''  # register your app then put the token.
+    reddit:  # required for the 'meme' command.
+      client_id: ''  # register an app on reddit then fill.
+      client_secret: '' # ...
+    mongodb_url: '' # setup a MongoDB database then retrieve the
+                    # connection URI from the cluster.
+  defaults:
+    prefix: '.'  # set it to whatever you want.
+  loglevel: 20  # means logging.INFO level.
+  ```
+   - Optionally, to configure the log-level in the console, set `loglevel` to any of [these values][1], by default it's
+set to `INFO` level.
 
 ### Contribution
 To contribute to this project you should follow the idioms described below, if not then core developers might have to
@@ -63,8 +61,8 @@ To export these classes to be picked up and be loaded, append a `__cogexport__` 
 __cogexport__ = [MyCategory, SomeCategory]
 ```
 
-For accessing bot-metadata, there's a property `metadata` in the `Bot` object (which can be accessed with `ctx.bot`),
-which is a [`pymongo.Database`][0] object. There's also a `config` in `Bot` which is an alias to `metadata.config`.
+The bot has a logger attached to it, which can be used later on for intentions of tracing back. In a command it can be
+acquired through `ctx.bot.logger`.
 
 [0]: https://api.mongodb.com/python/current/api/pymongo/database.html?highlight=database#pymongo.database.Database
 [1]: https://docs.python.org/3.8/library/logging.html#logging-levels
