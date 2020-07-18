@@ -4,4 +4,4 @@ __pycache__/
 assets/
 .idea/
 venv/
-start.sh
+config.yml
