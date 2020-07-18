@@ -1,92 +1,91 @@
-import os
 import re
-import signal
-import asyncio
 import logging
+import yaml
 
-from sys import stderr
-from _utils import DecoratedHelpCommand
-from pymongo import MongoClient
-from discord import Embed
-from discord.ext.commands import (
-    Bot,
-    has_guild_permissions
+from discord.ext.commands import Bot
+from utils.database import BotDatabase
+from utils.help_command import DecoratedHelpCommand
+from pymongo.errors import (
+    InvalidURI,
+    ConnectionFailure,
+    ConfigurationError
 )
-from cogs._utils import subscript, get_color
+
+from typing import List
+from utils.misc import subscript
+from schema import (
+    Schema, SchemaError, And, Optional
+)
 
 
-# the configured logger to use, to log all events.
-logger = logging.getLogger()
-logger.setLevel(os.getenv('DBOT_LOGLEVEL', logging.INFO))
-logger.addHandler((hnd := logging.StreamHandler(stderr), hnd.setLevel(logging.DEBUG))[0])
+class Triabot(Bot):
+    # schematic to detect proper configuration files, them being wrong causes a fatal error.
+    CONFIG_SCHEMA = Schema({
+        'credentials': {
+            'discord': {'token': str},
+            'reddit': {
+                'client_id': str,
+                'client_secret': str
+            },
+            'mongodb_url': str
+        },
+        'defaults': {
+            'prefix': And(str, lambda p: 0 < len(p) <= 2000)
+        },
+        Optional('loglevel', default=logging.INFO): int
+    })
 
-bot_data = MongoClient(os.environ['DBOT_DATASTORE']).get_default_database()
-bot_config = next(bot_data.configurations.find())
+    @classmethod
+    def extract_prefix(cls, bot, message) -> List[str]:
+        """Get bot prefix based on the guild configurations, also if the bot user was explicitly mentioned then
+        regardless of the guild prefix it responds to the invoker.
 
-logger.info('Loaded configuration', bot_config)
+        :param message: the message that the bot received.
+        :returns: a list of prefixes to match on.
+        """
 
+        # get the guild specific prefix or else default to the specified one defined
+        # inside a environment variable (it must be defined there).
+        prefixes = [bot.db.read_guild_prefix(message.guild.id) or bot.config['defaults']['prefix']]
 
-def _get_prefix_or_default(guild):
-    return subscript(bot_data.prefixes.find_one({'id': guild.id}),
-                     'text', bot_config['default_prefix'])
+        # if there was mention as a prefix then listen to that.
+        if _prefix := subscript(re.match(rf'^(<@!{bot.user.id}>\s*)', message.content), 0):
+            prefixes.append(_prefix)
 
+        return prefixes
 
-def get_prefix(client, message):
-    """Get bot prefix based on the guild configurations, also if the bot user was explicitly mentioned then
-    regardless of the guild prefix it responds to the invoker."""
+    async def on_ready(self):
+        self.logger.info("Bot has been started!")
 
-    # get the guild specific prefix or else default to the specified one defined
-    # inside a environment variable (it must be defined there).
-    prefixes = [_get_prefix_or_default(message.guild)]
+    def __init__(self, config_file):
+        try:
+            config = self.CONFIG_SCHEMA.validate(yaml.load(config_file))
+        except SchemaError as schmerr:
+            logging.exception("Invalid configuration schema", exc_info=schmerr)
+            exit()
+        except yaml.YAMLError as fmterr:
+            logging.exception("Invalid YAML file", exc_info=fmterr)
+            exit()
 
-    # if there was mention as a prefix then listen to that.
-    if _prefix := subscript(re.match(rf'^(<@!{client.user.id}>\s*)', message.content), 0):
-        prefixes.append(_prefix)
+        self.logger = logging.getLogger('discord')
+        self.logger.setLevel(config['loglevel'])
 
-    return prefixes
+        try:
+            database = BotDatabase(config['credentials']['mongodb_url'])
+        except (InvalidURI,
+                ConnectionFailure,
+                ConfigurationError) as dberr:
+            logging.exception("MongoDB database initialization failed", exc_info=dberr)
+            exit()
 
+        self.db, self.config = database, config
+        super().__init__(self.extract_prefix, DecoratedHelpCommand())
 
-# build the Bot for doing handling all the commands and listening to events.
-bot = Bot(get_prefix, help_command=DecoratedHelpCommand())
-bot.load_extension('cogs')
-
-logger.info('Loaded bot categories %s' % ','.join(bot.cogs))
-logger.info('Loaded bot commands %s' % ','.join(map(str, bot.commands)))
-
-# set the data collections to access later on in commands, also the logger.
-bot.metadata, bot.config, bot.logger = bot_data, bot_config, logger
-
-
-@bot.command()
-@has_guild_permissions(manage_guild=True)
-async def prefix(ctx, text: str=None):
-    """Get the current prefix for the guild, if provided one set it as prefix. Though the bot would respond to
-    mentions no matter what prefix is set."""
-
-    prev_prefix = _get_prefix_or_default(ctx.guild)
-
-    if text:
-        bot_data.prefixes.update_one({'id': ctx.guild.id}, {'$set': {'text': text}}, upsert=True)
-        await ctx.send(embed=Embed.from_dict({
-            'title': 'Guild prefix has changed',
-            'fields': [{
-                'name': 'From',
-                'value': prev_prefix,
-            }, {
-                'name': 'To',
-                'value': text
-            }],
-            'color': get_color().value}))
-    else:
-        await ctx.send(embed=Embed.from_dict({'title': 'Current guild prefix',
-                                              'description': prev_prefix,
-                                              'color': get_color().value}))
+    def run(self):
+        super().run(self.config['credentials']['discord']['token'])
 
 
-bot.run(bot_config['discord_token'])
-bot_close = lambda: asyncio.run(bot.logout())
-
-# register signal handlers to do clean up while exiting.
-signal.signal(signal.SIGINT, bot_close)
-signal.signal(signal.SIGABRT, bot_close)
-signal.signal(signal.SIGTERM, bot_close)
+if __name__ == '__main__':
+    bot = Triabot(open('config.yml'))
+    bot.load_extension('cogs')
+    bot.run()
