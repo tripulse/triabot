@@ -2,10 +2,12 @@ from discord import Embed
 from discord.ext.menus import MenuPages, ListPageSource
 from discord.ext.commands import Cog, Group, BucketType, HelpCommand
 
-from cogs._utils import get_color
+from utils.misc import get_color
+
 
 # replace newlines in a command/cog/group docstring to spaces.
-format_description = lambda data: data.replace('\n', ' ') if data else None
+def format_description(data):
+    return data.replace('\n', ' ') if data else None
 
 
 class CogCommandPages(ListPageSource):
@@ -78,9 +80,9 @@ class DecoratedHelpCommand(HelpCommand):
 
     async def send_command_help(self, command):
         doc = Embed.from_dict({
-            'title': f'{self.clean_prefix}{command.name} {command.signature}',
+            'title'      : f'{self.clean_prefix}{command.name} {command.signature}',
             'description': command.help,
-            'color': get_color().value
+            'color'      : get_color().value
         })
 
         if command.aliases:
@@ -93,10 +95,14 @@ class DecoratedHelpCommand(HelpCommand):
         if command._max_concurrency and getattr(command._max_concurrency, 'per', None) != BucketType.default:
             doc.add_field(name='Concurrency',
                           value='**%s** time(s) per **%s**' %
-                            (command._max_concurrency.number, command._max_concurrency.per.name),
+                                (command._max_concurrency.number, command._max_concurrency.per.name),
                           inline=True)
 
         await self.get_destination().send(embed=doc)
 
     async def send_group_help(self, group):
         await MenuPages(GroupCommandPages(group, self.clean_prefix)).start(self.context)
+
+    async def send_error_message(self, error):
+        await self.context.send(embed=Embed(description=error),
+                                color=get_color().value)
