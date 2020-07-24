@@ -5,6 +5,3 @@ assets/
 .idea/
 venv/
 config.yml
-keep_alive.py
-.replit
-.gitignore
