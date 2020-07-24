@@ -46,7 +46,7 @@ class Triabot(Bot):
 
         # get the guild specific prefix or else default to the specified one defined
         # inside a environment variable (it must be defined there).
-        prefixes = [bot.db.read_guild_prefix(message.guild.id) or bot.config['defaults']['prefix']]
+        prefixes = [bot.db.read_guild_prefix(getattr(message.guild, 'id', None)) or bot.config['defaults']['prefix']]
 
         # if there was mention as a prefix then listen to that.
         if _prefix := subscript(re.match(rf'^(<@!{bot.user.id}>\s*)', message.content), 0):
@@ -86,6 +86,19 @@ class Triabot(Bot):
 
 
 if __name__ == '__main__':
+    from utils import core_commands
+
+    # the bot instance, that'll drive the entire thing.
     bot = Triabot(open('config.yml'))
+
     bot.load_extension('cogs')
+    bot.command(core_commands.prefix)
+
+    from keep_alive import app
+    from threading import Thread
+
+    # host the Flask server on the separate thread, to prevent blocking.
+    Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 8000}).start()
+
     bot.run()
+

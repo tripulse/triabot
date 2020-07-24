@@ -104,5 +104,4 @@ class DecoratedHelpCommand(HelpCommand):
         await MenuPages(GroupCommandPages(group, self.clean_prefix)).start(self.context)
 
     async def send_error_message(self, error):
-        await self.context.send(embed=Embed(description=error),
-                                color=get_color().value)
+        await self.context.send(embed=Embed(description=error, color=get_color().value))
